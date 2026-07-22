@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans transition-all duration-300;
+  }
+
+  /* Light mode styles */
+  html.light {
+    background: linear-gradient(135deg, #f8f5f0 0%, #f3e9db 100%) !important;
+    /* Remove any dark border/frame */
+  }
+
+  html.light body {
+    background: transparent !important;
+    @apply text-gray-800;
+  }
+
+  html.light input,
+  html.light select,
+  html.light textarea {
+    @apply bg-white/90 border-gray-200 text-gray-800 backdrop-blur-sm;
+  }
+
+  html.light label {
+    @apply text-gray-700;
+  }
+
+  html.light a {
+    @apply text-emerald-600;
+  }
+
+  /* Remove dark frame from wrappers in light mode */
+  .light .glass,
+  .light .glass-light,
+  .light .glass-dark {
+    background: rgba(248, 245, 240, 0.85) !important;
+    /* beige glass effect */
+  }
+
+  /* Revert light mode card styles */
+  .light .card {
+    /* Revert to original styles */
+  }
+
+  /* Revert light mode button styles */
+  .light .btn {
+    /* Revert to original styles */
+  }
+
+  /* Revert light mode input styles */
+  .light .input {
+    /* Revert to original styles */
+  }
+
+  /* Dark mode styles */
+  html.dark {
+    @apply bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950;
+  }
+
+  html.dark body {
+    @apply text-gray-100;
+  }
+
+  html.dark input,
+  html.dark select,
+  html.dark textarea {
+    @apply bg-gray-800/30 border-gray-700/50 text-gray-100 backdrop-blur-sm;
+  }
+
+  html.dark label {
+    @apply text-gray-300;
+  }
+
+  html.dark a {
+    @apply text-emerald-400;
+  }
+}
+
+@layer components {
+  /* Premium gradients */
+  .gradient-primary {
+    @apply dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700
+           from-emerald-400 via-emerald-500 to-emerald-600;
+  }
+
+  .gradient-secondary {
+    @apply dark:from-gray-800 dark:via-gray-700 dark:to-gray-900
+           from-gray-100 via-gray-200 to-gray-300;
+  }
+
+  .gradient-accent {
+    @apply dark:from-amber-500 dark:via-amber-600 dark:to-amber-700
+           from-amber-400 via-amber-500 to-amber-600;
+  }
+
+  .gradient-danger {
+    @apply dark:from-red-500 dark:via-red-600 dark:to-red-700
+           from-red-400 via-red-500 to-red-600;
+  }
+
+  /* Glass effects */
+  .glass {
+    @apply backdrop-blur-md dark:bg-gray-900/30 bg-white/30;
+  }
+
+  .glass-light {
+    @apply backdrop-blur-md dark:bg-gray-900/40 bg-white/80;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md dark:bg-gray-800/40 bg-gray-100/80;
+  }
+
+  /* Premium borders */
+  .border-premium {
+    @apply border dark:border-emerald-500/20 border-emerald-500/30;
+  }
+
+  .border-glow {
+    @apply border dark:border-emerald-500/30 border-emerald-500/40
+           dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]
+           shadow-[0_0_15px_rgba(16,185,129,0.3)];
+  }
+
+  /* Premium shadows */
+  .shadow-premium {
+    @apply dark:shadow-[0_0_20px_rgba(16,185,129,0.15)]
+           shadow-[0_0_20px_rgba(16,185,129,0.25)];
+  }
+
+  .shadow-glow {
+    @apply dark:shadow-[0_0_30px_rgba(16,185,129,0.25)]
+           shadow-[0_0_30px_rgba(16,185,129,0.35)];
+  }
+
+  /* Card styles */
+  .card {
+    @apply rounded-2xl p-6 backdrop-blur-sm transition-all duration-300;
+  }
+
+  .card-light {
+    @apply glass-light border-premium shadow-premium;
+  }
+
+  .card-dark {
+    @apply glass-dark border-glow shadow-glow;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply gradient-primary text-white shadow-premium 
+           dark:hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]
+           hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]
+           hover:scale-[1.02];
+  }
+
+  .btn-secondary {
+    @apply glass border-premium 
+           dark:text-gray-300 text-gray-700
+           hover:shadow-premium hover:scale-[1.02];
+  }
+
+  /* Input styles */
+  .input {
+    @apply px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300;
+  }
+
+  .input-light {
+    @apply glass-light border-premium;
+  }
+
+  .input-dark {
+    @apply glass-dark border-glow;
+  }
+
+  /* Text styles */
+  .text-gradient {
+    @apply bg-clip-text text-transparent 
+           dark:bg-gradient-to-r dark:from-emerald-500 dark:to-emerald-700
+           bg-gradient-to-r from-emerald-400 to-emerald-600;
+  }
+
+  .text-glow {
+    @apply dark:text-emerald-400 text-emerald-500
+           dark:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]
+           drop-shadow-[0_0_8px_rgba(16,185,129,0.6)];
+  }
+}
+
+@layer utilities {
+  /* Hover effects */
+  .hover-premium {
+    @apply dark:hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]
+           hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]
+           hover:scale-[1.02] transition-all duration-300;
+  }
+
+  .hover-glow {
+    @apply dark:hover:shadow-[0_0_40px_rgba(16,185,129,0.4)]
+           hover:shadow-[0_0_40px_rgba(16,185,129,0.5)]
+           hover:scale-[1.03] transition-all duration-300;
+  }
+}
+
+/* Animation classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 15s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
