@@ -2,6 +2,9 @@
 
 A full-stack personal budget management web application, built as my Bachelor's thesis project at Ovidius University of Constanța (Computer Science, 2025).
 
+**Live demo:** [https://budget-manager-livid-three.vercel.app](https://budget-manager-livid-three.vercel.app)  
+**API:** [https://budget-manager-u6l5.onrender.com](https://budget-manager-u6l5.onrender.com)
+
 Track income and expenses, organize them by category, visualize your finances with interactive charts, browse transactions on a calendar, set monthly savings goals, and export reports to CSV or PDF — all in a modern, responsive UI with dark/light themes and full English/Romanian language support.
 
 ## Screenshots
