@@ -8,9 +8,7 @@ import {
   FaWallet,
   FaArrowUp,
   FaArrowDown,
-  FaPiggyBank,
   FaChartPie,
-  FaClipboardList,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Loader from "../components/Loader";
@@ -112,56 +110,13 @@ const logoVariants = {
   },
 };
 
-const TIME_RANGES = [
-  { label: "Daily", value: "daily" },
-  { label: "Weekly", value: "weekly" },
-  { label: "Monthly", value: "monthly" },
-  { label: "1 Year", value: "year" },
-  { label: "5 Years", value: "5years" },
-  { label: "All Time", value: "all" },
-];
-
 export default function Dashboard() {
   const [summary, setSummary] = useState(null);
   const { language } = useLanguage();
   const { isDarkMode } = useTheme();
   const { formatCurrency } = useCurrency();
-  const [timeRange, setTimeRange] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-
-  // Move filterByRange function here, before any usage
-  const filterByRange = (data) => {
-    if (!data) return data;
-    if (timeRange === "all") return data;
-    const now = new Date();
-    let fromDate;
-    switch (timeRange) {
-      case "daily":
-        fromDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        break;
-      case "weekly":
-        fromDate = new Date(now);
-        fromDate.setDate(now.getDate() - 6);
-        break;
-      case "monthly":
-        fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        break;
-      case "year":
-        fromDate = new Date(now.getFullYear(), 0, 1);
-        break;
-      case "5years":
-        fromDate = new Date(now.getFullYear() - 4, 0, 1);
-        break;
-      default:
-        return data;
-    }
-    return data.filter((item) => {
-      const itemDate = new Date(item.date);
-      return itemDate >= fromDate && itemDate <= now;
-    });
-  };
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -193,12 +148,10 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // Filter recent transactions and recalculate summary based on timeRange
-  const filteredSummary = summary;
-
-  const total = filteredSummary?.totalBalance ?? 0;
-  const income = filteredSummary?.income ?? 0;
-  const expenses = filteredSummary?.expenses ?? 0;
+  const total = summary?.totalBalance ?? 0;
+  const income = summary?.income ?? 0;
+  const expenses = summary?.expenses ?? 0;
+  const categoryCount = Object.keys(summary?.categorySummary ?? {}).length;
 
   const cards = [
     {
@@ -224,7 +177,7 @@ export default function Dashboard() {
     },
     {
       title: t[language].categories,
-      value: "+3",
+      value: `${categoryCount}`,
       icon: <FaChartPie />,
       type: "income",
       delay: 1.0,
@@ -237,7 +190,6 @@ export default function Dashboard() {
         <div className="flex items-center justify-center min-h-[300px]"><Loader size={48} /></div>
       ) : (
         <>
-          {/* Time range filter removed as requested */}
           {/* Animated background elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-emerald-500/10 animate-gradient-x"></div>
@@ -318,7 +270,6 @@ export default function Dashboard() {
           </div>
 
           {error && <div className="mt-2 text-red-500 text-sm font-semibold bg-red-50 dark:bg-red-900/30 rounded p-2">{error}</div>}
-          {success && <div className="mt-2 text-green-600 text-sm font-semibold bg-green-50 dark:bg-green-900/30 rounded p-2">{success}</div>}
         </>
       )}
 

@@ -52,7 +52,7 @@ exports.deleteExpense = async (req, res) => {
 
   try {
     await Expense.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-    res.json({ msg: getMessage(lang, "expenseDeleted") }); // ⬅️ opțional
+    res.json({ msg: getMessage(lang, "expenseDeleted") });
   } catch (err) {
     console.error(err.message);
     res.status(500).send(getMessage(lang, "serverError"));

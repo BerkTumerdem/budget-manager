@@ -66,7 +66,7 @@ export default function Settings() {
         </div>
       ) : (
         <>
-          <h2 className="text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">⚙️ {labels[lang].settings}</h2>
+          <h2 className="text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">{labels[lang].settings}</h2>
           {!localStorage.getItem("token") ? (
             <p className="text-gray-400 italic">{labels[lang].redirect}</p>
           ) : (

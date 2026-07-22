@@ -6,7 +6,9 @@ const messages = {
     serverError: "Server error",
     requiredFields: "All fields are required",
     categoryExists: "Category already exists",
-    categoryAdded: "Category added successfully"
+    categoryAdded: "Category added successfully",
+    categoryDeleted: "Category deleted",
+    expenseDeleted: "Transaction deleted"
   },
   ro: {
     invalidCredentials: "Email sau parolă incorectă",
@@ -15,7 +17,9 @@ const messages = {
     serverError: "Eroare de server",
     requiredFields: "Toate câmpurile sunt obligatorii",
     categoryExists: "Categoria există deja",
-    categoryAdded: "Categoria a fost adăugată"
+    categoryAdded: "Categoria a fost adăugată",
+    categoryDeleted: "Categoria a fost ștearsă",
+    expenseDeleted: "Tranzacția a fost ștearsă"
   }
 };
 

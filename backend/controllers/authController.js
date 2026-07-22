@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const constants = require("../config/constants");
-const getMessage = require("../utils/messages"); // ✔️ Importul corect
+const getMessage = require("../utils/messages");
 
 exports.registerUser = async (req, res) => {
   let { email, password } = req.body;

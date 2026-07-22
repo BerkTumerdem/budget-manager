@@ -5,10 +5,8 @@ const CurrencyContext = createContext();
 export const CurrencyProvider = ({ children }) => {
   const selectedCurrency = "RON";
   
-  const convert = (amount) => {
-    // Simply return the amount as is since we're only using lei
-    return amount;
-  };
+  // Amounts are stored and displayed in RON, so no conversion is needed
+  const convert = (amount) => amount;
 
   const formatCurrency = (amount) => {
     return `${amount.toFixed(2)} lei`;

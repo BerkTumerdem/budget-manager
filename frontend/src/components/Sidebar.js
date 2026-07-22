@@ -47,7 +47,6 @@ function getUserEmailFromToken() {
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
-    // If you add username in the future, use payload.user.username
     return payload.user?.email || payload.email || null;
   } catch {
     return null;

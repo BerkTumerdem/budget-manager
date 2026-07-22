@@ -125,7 +125,7 @@ export default function TransactionsCalendar() {
                                 <li key={t._id} className="flex items-center gap-2">
                                   <span className={`inline-block w-2 h-2 rounded-full ${t.type === 'income' ? 'bg-green-400' : 'bg-red-400'}`}></span>
                                   <span className="font-semibold">{t.type === 'income' ? '+' : '-'}{t.amount}</span>
-                                  <span className="truncate">{t.description || 'No desc'}</span>
+                                  <span className="truncate">{t.description || translations[language].noDesc}</span>
                                   {t.category && (
                                     <span className="ml-1 px-1 rounded bg-emerald-100 text-emerald-700 text-[10px]">{t.category.name}</span>
                                   )}

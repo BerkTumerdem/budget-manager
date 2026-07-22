@@ -61,7 +61,7 @@ exports.deleteCategory = async (req, res) => {
 
   try {
     await Category.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-    res.json({ msg: "Category deleted" }); // Poți adăuga în messages.js dacă vrei localizat
+    res.json({ msg: getMessage(lang, "categoryDeleted") });
   } catch (err) {
     console.error(err.message);
     res.status(500).send(getMessage(lang, "serverError"));

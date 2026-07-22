@@ -54,10 +54,6 @@ export default function Categories() {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/login";
-    return null;
-  }
 
   useEffect(() => {
     if (!token) return (window.location.href = "/login");
