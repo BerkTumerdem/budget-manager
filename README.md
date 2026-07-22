@@ -113,4 +113,18 @@ All routes except auth require an `Authorization: Bearer <token>` header. Send `
 
 ## Author
 
-**Aydin Berk Tumerdem** — [LinkedIn](https://www.linkedin.com/in/aydin-berk-tumerdem-95a572286/)
+**Aydin Berk Tumerdem** — [LinkedIn](https://www.linkedin.com/in/aydin-berk-tumerdem-95a572286/) · [GitHub](https://github.com/BerkTumerdem)
+
+## Free deployment (overview)
+
+| Part | Free host |
+|------|-----------|
+| Database | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (M0 free cluster) |
+| Backend | [Render](https://render.com) (Web Service, free) |
+| Frontend | [Vercel](https://vercel.com) (Project from `frontend/`) |
+
+1. Create an Atlas cluster, get `MONGO_URI`, allow network access `0.0.0.0/0`.
+2. On Render, deploy the `backend` folder with env vars: `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL` (your Vercel URL).
+3. On Vercel, set Root Directory to `frontend` and env var `REACT_APP_API_URL` to `https://<your-render-service>.onrender.com/api`.
+
+Note: the free Render tier spins down after inactivity — the first request after idle can take ~30–60 seconds.

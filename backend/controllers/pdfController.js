@@ -50,7 +50,7 @@ exports.generatePDFReport = async (req, res) => {
     doc.pipe(res);
 
     // Add logo if available
-    const logoPath = path.join(__dirname, "../../frontend/public/mchLOGO.png");
+    const logoPath = path.join(__dirname, "../assets/mchLOGO.png");
     let logoHeight = 0;
     if (fs.existsSync(logoPath)) {
       // Draw logo at the top center
