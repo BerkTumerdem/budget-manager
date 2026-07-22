@@ -4,6 +4,16 @@ A full-stack personal budget management web application, built as my Bachelor's 
 
 Track income and expenses, organize them by category, visualize your finances with interactive charts, browse transactions on a calendar, set monthly savings goals, and export reports to CSV or PDF — all in a modern, responsive UI with dark/light themes and full English/Romanian language support.
 
+## Screenshots
+
+| Dashboard | Reports & Charts |
+|-----------|------------------|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Reports](docs/screenshots/report.png) |
+
+| Transactions | Calendar |
+|--------------|----------|
+| ![Transactions](docs/screenshots/expenses.png) | ![Calendar](docs/screenshots/calendar.png) |
+
 ## Features
 
 - **Authentication** — register/login with JWT, bcrypt-hashed passwords, protected routes
