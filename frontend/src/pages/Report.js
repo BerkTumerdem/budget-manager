@@ -160,14 +160,14 @@ export default function Report() {
     : [];
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
       {loading ? (
         <div className="flex items-center justify-center min-h-[300px]">
           <Loader size={48} />
         </div>
       ) : (
         <>
-          <h2 className="text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">📊 {t[language].title}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">📊 {t[language].title}</h2>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div>
@@ -224,12 +224,12 @@ export default function Report() {
             >
               🧾 {t[language].pdf}
             </button>
-            <label className="ml-4 font-medium">
+            <label className="font-medium flex flex-wrap items-center gap-2 w-full sm:w-auto">
               {t[language].viewLabel}:
               <select
                 value={viewMode}
                 onChange={e => setViewMode(e.target.value)}
-                className="ml-2 px-3 py-2 bg-gray-900 border border-emerald-700 rounded-xl text-white"
+                className="px-3 py-2 bg-gray-900 border border-emerald-700 rounded-xl text-white w-full sm:w-auto"
               >
                 <option value="all">{t[language].viewAll}</option>
                 <option value="expenses">{t[language].viewExpenses}</option>
@@ -252,6 +252,7 @@ export default function Report() {
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold">📊 {t[language].byCategory}</h3>
 
+                <div className="w-full min-h-[280px] sm:min-h-[300px]">
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -260,7 +261,7 @@ export default function Report() {
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={100}
+                      outerRadius={80}
                       isAnimationActive
                     >
                       {filteredPieData.map((entry, index) => (
@@ -279,16 +280,18 @@ export default function Report() {
                     />
                   </PieChart>
                 </ResponsiveContainer>
+                </div>
 
-                <ResponsiveContainer width="100%" height={250}>
+                <div className="w-full overflow-x-auto">
+                <ResponsiveContainer width="100%" height={280} minWidth={280}>
                   <BarChart
                     data={filteredPieData}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                    barSize={30}
+                    margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
+                    barSize={24}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                    <XAxis dataKey="name" stroke={themeColor} />
-                    <YAxis stroke={themeColor} />
+                    <XAxis dataKey="name" stroke={themeColor} interval={0} angle={-25} textAnchor="end" height={70} tick={{ fontSize: 11 }} />
+                    <YAxis stroke={themeColor} width={40} tick={{ fontSize: 11 }} />
                     <Tooltip formatter={(val) => `${val.toFixed(2)} lei`} />
                     <Bar dataKey="value" isAnimationActive>
                       {filteredPieData.map((entry, index) => (
@@ -300,6 +303,7 @@ export default function Report() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+                </div>
               </div>
 
               <ul className="space-y-2">

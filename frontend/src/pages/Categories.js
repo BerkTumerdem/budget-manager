@@ -118,7 +118,7 @@ export default function Categories() {
     );
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
       {loading ? (
         <div className="flex items-center justify-center min-h-[300px]"><Loader size={48} /></div>
       ) : (

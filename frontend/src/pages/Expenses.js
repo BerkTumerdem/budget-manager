@@ -213,19 +213,19 @@ export default function Expenses() {
     );
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
       {loading ? (
         <div className="flex items-center justify-center min-h-[300px]"><Loader size={48} /></div>
       ) : (
         <>
-          <h2 className="text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">💸 {t[language].title}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">💸 {t[language].title}</h2>
 
           <div className="flex flex-wrap gap-2 mb-6">
             {TIME_RANGES.map((range) => (
               <button
                 key={range.value}
                 onClick={() => setTimeRange(range.value)}
-                className={`px-4 py-2 rounded-full font-semibold border transition-all duration-200
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm rounded-full font-semibold border transition-all duration-200
                   ${timeRange === range.value
                     ? "bg-emerald-600 text-white border-emerald-700 shadow"
                     : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-emerald-700 hover:text-white"}
@@ -304,18 +304,18 @@ export default function Expenses() {
           </form>
 
           <div className="space-y-4">
-            <div className="flex gap-4 items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
               <input
                 type="text"
                 placeholder={t[language].search}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none transition-colors duration-200"
+                className="w-full sm:flex-1 px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none transition-colors duration-200"
               />
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none transition-colors duration-200"
+                className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none transition-colors duration-200"
               >
                 <option value="">{t[language].all}</option>
                 <option value="expense">{t[language].expense}</option>

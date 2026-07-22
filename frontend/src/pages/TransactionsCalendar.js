@@ -88,11 +88,11 @@ export default function TransactionsCalendar() {
   };
 
   return (
-    <div className={`p-6 min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white' : 'bg-white text-gray-900'} font-sans`}>
-      <h2 className={`text-3xl font-bold mb-10 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{translations[language].title}</h2>
+    <div className={`p-4 sm:p-6 min-h-screen overflow-x-hidden ${isDarkMode ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white' : 'bg-white text-gray-900'} font-sans`}>
+      <h2 className={`text-2xl sm:text-3xl font-bold mb-6 sm:mb-10 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{translations[language].title}</h2>
 
-      <div className="flex flex-col lg:flex-row gap-10 justify-center items-start">
-        <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} p-6 rounded-3xl shadow-xl hover:shadow-emerald-500 transition-all`}>
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 justify-center items-stretch lg:items-start w-full">
+        <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} p-3 sm:p-6 rounded-3xl shadow-xl w-full max-w-full lg:max-w-md mx-auto`}>
           <Calendar
             onClickDay={handleDateClick}
             tileContent={({ date }) => {
@@ -108,7 +108,7 @@ export default function TransactionsCalendar() {
                     <div className="w-2 h-2 rounded-full bg-emerald-400" />
                   )}
                   {hoveredDay === day && count > 0 && (
-                    <div className="absolute z-50 left-1/2 top-full mt-2 -translate-x-1/2 bg-white dark:bg-gray-900 border border-emerald-400 rounded-xl shadow-lg p-3 min-w-[220px] max-w-xs text-xs text-gray-900 dark:text-white animate-fade-in">
+                    <div className="absolute z-50 left-1/2 top-full mt-2 -translate-x-1/2 bg-white dark:bg-gray-900 border border-emerald-400 rounded-xl shadow-lg p-3 min-w-[180px] max-w-[min(16rem,90vw)] text-xs text-gray-900 dark:text-white animate-fade-in hidden sm:block">
                       <div className="mb-1 font-bold">{day}</div>
                       {(() => {
                         const filtered = transactions.filter((t) => t.date.startsWith(day));
@@ -145,12 +145,12 @@ export default function TransactionsCalendar() {
                 ? "!bg-emerald-100 dark:!bg-emerald-900/40 !border-emerald-400"
                 : undefined
             }
-            className={`react-calendar !w-[340px] !h-[360px] rounded-xl text-sm ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+            className={`react-calendar !w-full !max-w-[100%] rounded-xl text-sm ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
             ref={calendarRef}
           />
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 w-full min-w-0">
           {selectedDate && (
             <>
               <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-emerald-300' : 'text-emerald-600'}`}>{translations[language].onDate} {selectedDate}</h3>

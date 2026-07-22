@@ -185,7 +185,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
       {loading ? (
         <div className="flex items-center justify-center min-h-[300px]"><Loader size={48} /></div>
       ) : (
@@ -245,7 +245,7 @@ export default function Dashboard() {
             </span>
           </motion.h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 max-w-7xl mx-auto relative z-10 px-0">
             <AnimatePresence>
               {cards.map((card, index) => (
                 <motion.div

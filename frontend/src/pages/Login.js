@@ -99,7 +99,7 @@ export default function AuthPage() {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="bg-[#0f0f0f] w-full max-w-md p-8 rounded-3xl shadow-2xl space-y-6 animate-fade-in border border-emerald-700"
+        className="bg-[#0f0f0f] w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6 animate-fade-in border border-emerald-700 mt-20 sm:mt-0"
       >
         <h2 className="text-4xl font-bold text-center mb-2 text-emerald-400">
           {mode === "login" ? "🔐 " + t[language].login : "📝 " + t[language].register}
