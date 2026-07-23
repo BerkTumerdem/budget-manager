@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "../utils/axiosConfig";
 import DashboardCard from "../components/DashboardCard";
 import { useLanguage } from "../context/LanguageContext";
-import { useTheme } from "../context/ThemeContext";
 import { useCurrency } from "../context/CurrencyContext";
 import {
   FaWallet,
   FaArrowUp,
   FaArrowDown,
   FaChartPie,
+  FaPiggyBank,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Loader from "../components/Loader";
@@ -112,31 +112,25 @@ const logoVariants = {
 
 export default function Dashboard() {
   const [summary, setSummary] = useState(null);
+  const [savingsGoal, setSavingsGoal] = useState(0);
   const { language } = useLanguage();
-  const { isDarkMode } = useTheme();
   const { formatCurrency } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return (window.location.href = "/login");
-        const res = await axios.get("/reports", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSummary(res.data);
-      } catch (err) {
-        console.error("Failed to fetch summary:", err);
-        setError("Failed to fetch summary. Please try again later.");
-      }
-    };
-
     const fetchData = async () => {
       setLoading(true);
       try {
-        await fetchSummary();
+        const token = localStorage.getItem("token");
+        if (!token) return (window.location.href = "/login");
+
+        const [reportRes, goalRes] = await Promise.all([
+          axios.get("/reports"),
+          axios.get("/settings/savings-goal").catch(() => ({ data: { goal: 0 } })),
+        ]);
+        setSummary(reportRes.data);
+        setSavingsGoal(Number(goalRes.data?.goal) || 0);
       } catch (err) {
         console.error("Failed to fetch data:", err);
         setError("Failed to fetch data. Please try again later.");
@@ -152,6 +146,9 @@ export default function Dashboard() {
   const income = summary?.income ?? 0;
   const expenses = summary?.expenses ?? 0;
   const categoryCount = Object.keys(summary?.categorySummary ?? {}).length;
+  const savedSoFar = Math.max(0, income - expenses);
+  const goalProgress =
+    savingsGoal > 0 ? Math.min(100, Math.round((savedSoFar / savingsGoal) * 100)) : 0;
 
   const cards = [
     {
@@ -159,28 +156,33 @@ export default function Dashboard() {
       value: formatCurrency(total),
       icon: <FaWallet />,
       type: "highlight",
-      delay: 0.2,
     },
     {
       title: t[language].income,
       value: formatCurrency(income),
-      icon: <FaArrowDown />,
+      icon: <FaArrowUp />,
       type: "income",
-      delay: 0.4,
     },
     {
       title: t[language].expenses,
       value: formatCurrency(expenses),
-      icon: <FaArrowUp />,
+      icon: <FaArrowDown />,
       type: "expense",
-      delay: 0.6,
+    },
+    {
+      title: t[language].savings,
+      value:
+        savingsGoal > 0
+          ? `${formatCurrency(savedSoFar)} / ${formatCurrency(savingsGoal)} (${goalProgress}%)`
+          : formatCurrency(savedSoFar),
+      icon: <FaPiggyBank />,
+      type: "income",
     },
     {
       title: t[language].categories,
       value: `${categoryCount}`,
       icon: <FaChartPie />,
       type: "income",
-      delay: 1.0,
     },
   ];
 

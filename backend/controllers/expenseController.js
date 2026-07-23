@@ -39,7 +39,12 @@ exports.updateExpense = async (req, res) => {
       { _id: req.params.id, userId: req.user.id },
       req.body,
       { new: true }
-    );
+    ).populate("category");
+
+    if (!expense) {
+      return res.status(404).json({ msg: getMessage(lang, "serverError") });
+    }
+
     res.json(expense);
   } catch (err) {
     console.error(err.message);

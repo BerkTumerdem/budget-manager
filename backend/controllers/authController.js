@@ -7,10 +7,18 @@ const getMessage = require("../utils/messages");
 
 exports.registerUser = async (req, res) => {
   let { email, password } = req.body;
-  email = email.trim().toLowerCase();
+  email = (email || "").trim().toLowerCase();
   const lang = req.headers["accept-language"] || constants.LANGUAGE.DEFAULT;
 
   try {
+    if (!email || !password) {
+      return res.status(400).json({ msg: getMessage(lang, "requiredFields") });
+    }
+
+    if (password.length < constants.VALIDATION.PASSWORD_MIN_LENGTH) {
+      return res.status(400).json({ msg: getMessage(lang, "passwordTooShort") });
+    }
+
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: getMessage(lang, "userExists") });
@@ -25,16 +33,20 @@ exports.registerUser = async (req, res) => {
     res.json({ token, msg: getMessage(lang, "userCreated") });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send(getMessage(lang, "serverError"));
+    res.status(500).json({ msg: getMessage(lang, "serverError") });
   }
 };
 
 exports.loginUser = async (req, res) => {
   let { email, password } = req.body;
-  email = email.trim().toLowerCase();
+  email = (email || "").trim().toLowerCase();
   const lang = req.headers["accept-language"] || constants.LANGUAGE.DEFAULT;
 
   try {
+    if (!email || !password) {
+      return res.status(400).json({ msg: getMessage(lang, "requiredFields") });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: getMessage(lang, "invalidCredentials") });
@@ -51,6 +63,6 @@ exports.loginUser = async (req, res) => {
     res.json({ token });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send(getMessage(lang, "serverError"));
+    res.status(500).json({ msg: getMessage(lang, "serverError") });
   }
 };

@@ -96,10 +96,12 @@ export default function Report() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = {};
       if (start) params.start = start;
       if (end) params.end = end;
+      if (category) params.category = category;
       const res = await axios.get("/reports", { params });
       setSummary(res.data);
     } catch (err) {
@@ -167,7 +169,7 @@ export default function Report() {
         </div>
       ) : (
         <>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">📊 {t[language].title}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-emerald-600 dark:text-emerald-400">{t[language].title}</h2>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div>
@@ -176,7 +178,7 @@ export default function Report() {
                 type="date"
                 value={start}
                 onChange={(e) => setStart(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-900 border border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
               />
             </div>
             <div>
@@ -185,7 +187,7 @@ export default function Report() {
                 type="date"
                 value={end}
                 onChange={(e) => setEnd(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-900 border border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
               />
             </div>
             <div>
@@ -193,7 +195,7 @@ export default function Report() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-900 border border-emerald-700 rounded-xl text-white"
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl"
               >
                 <option value="">{t[language].all}</option>
                 {categories.map((cat) => (
@@ -210,26 +212,26 @@ export default function Report() {
               onClick={fetchData}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl shadow transition"
             >
-              🔄 {t[language].refresh}
+              {t[language].refresh}
             </button>
             <button
               onClick={() => handleDownload("csv")}
               className="bg-yellow-500 hover:bg-yellow-600 text-black px-5 py-2 rounded-xl shadow transition"
             >
-              📁 {t[language].csv}
+              {t[language].csv}
             </button>
             <button
               onClick={() => handleDownload("pdf")}
               className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow transition"
             >
-              🧾 {t[language].pdf}
+              {t[language].pdf}
             </button>
             <label className="font-medium flex flex-wrap items-center gap-2 w-full sm:w-auto">
               {t[language].viewLabel}:
               <select
                 value={viewMode}
-                onChange={e => setViewMode(e.target.value)}
-                className="px-3 py-2 bg-gray-900 border border-emerald-700 rounded-xl text-white w-full sm:w-auto"
+                onChange={(e) => setViewMode(e.target.value)}
+                className="px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl w-full sm:w-auto"
               >
                 <option value="all">{t[language].viewAll}</option>
                 <option value="expenses">{t[language].viewExpenses}</option>
@@ -239,18 +241,26 @@ export default function Report() {
           </div>
 
           {summary ? (
-            <div className="space-y-8">
-              <div className="bg-gray-800/30 border border-gray-700 p-6 rounded-2xl shadow backdrop-blur">
-                <h3 className="text-xl font-semibold mb-4">{t[language].balance} & {t[language].total}</h3>
+            <div className="space-y-8 mt-8">
+              <div className="bg-white/70 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700 p-6 rounded-2xl shadow backdrop-blur">
+                <h3 className="text-xl font-semibold mb-4">
+                  {t[language].balance} & {t[language].total}
+                </h3>
                 <div className="space-y-2 text-lg">
-                  <p>💰 <strong>{t[language].balance}:</strong> {formatCurrency(summary.totalBalance)}</p>
-                  <p>📥 <strong>{t[language].income}:</strong> {formatCurrency(summary.income)}</p>
-                  <p>📤 <strong>{t[language].total}:</strong> {formatCurrency(summary.expenses)}</p>
+                  <p>
+                    <strong>{t[language].balance}:</strong> {formatCurrency(summary.totalBalance)}
+                  </p>
+                  <p>
+                    <strong>{t[language].income}:</strong> {formatCurrency(summary.income)}
+                  </p>
+                  <p>
+                    <strong>{t[language].total}:</strong> {formatCurrency(summary.expenses)}
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold">📊 {t[language].byCategory}</h3>
+                <h3 className="text-xl font-semibold">{t[language].byCategory}</h3>
 
                 <div className="w-full min-h-[280px] sm:min-h-[300px]">
                 <ResponsiveContainer width="100%" height={300}>
@@ -289,7 +299,7 @@ export default function Report() {
                     margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
                     barSize={24}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#444" : "#ddd"} />
                     <XAxis dataKey="name" stroke={themeColor} interval={0} angle={-25} textAnchor="end" height={70} tick={{ fontSize: 11 }} />
                     <YAxis stroke={themeColor} width={40} tick={{ fontSize: 11 }} />
                     <Tooltip formatter={(val) => `${val.toFixed(2)} lei`} />
@@ -316,10 +326,10 @@ export default function Report() {
                   .map(([cat, total]) => (
                     <li
                       key={cat}
-                      className="flex justify-between p-4 bg-gray-900 border border-gray-700 rounded-xl shadow"
+                      className="flex justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow"
                     >
                       <span className="font-medium">{cat}</span>
-                      <span className={total >= 0 ? "text-green-400" : "text-red-400"}>
+                      <span className={total >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
                         {formatCurrency(Math.abs(total))}
                       </span>
                     </li>
@@ -327,7 +337,7 @@ export default function Report() {
               </ul>
             </div>
           ) : (
-            <p className="text-gray-400 italic">{t[language].noData}</p>
+            <p className="text-gray-500 dark:text-gray-400 italic mt-6">{t[language].noData}</p>
           )}
           {error && <div className="mt-2 text-red-500 text-sm font-semibold bg-red-50 dark:bg-red-900/30 rounded p-2">{error}</div>}
           {success && <div className="mt-2 text-green-600 text-sm font-semibold bg-green-50 dark:bg-green-900/30 rounded p-2">{success}</div>}

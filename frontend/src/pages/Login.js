@@ -57,10 +57,21 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    if (mode === "register" && formData.password !== confirmPassword) {
-      setError(language === "ro" ? "Parolele nu coincid" : "Passwords do not match");
-      setLoading(false);
-      return;
+    if (mode === "register") {
+      if (formData.password.length < 6) {
+        setError(
+          language === "ro"
+            ? "Parola trebuie să aibă cel puțin 6 caractere"
+            : "Password must be at least 6 characters"
+        );
+        setLoading(false);
+        return;
+      }
+      if (formData.password !== confirmPassword) {
+        setError(language === "ro" ? "Parolele nu coincid" : "Passwords do not match");
+        setLoading(false);
+        return;
+      }
     }
     try {
       if (mode === "login") {
@@ -74,7 +85,8 @@ export default function AuthPage() {
       }
     } catch (err) {
       setError(
-        mode === "login" ? t[language].errorLogin : t[language].errorRegister
+        err.response?.data?.msg ||
+          (mode === "login" ? t[language].errorLogin : t[language].errorRegister)
       );
     } finally {
       setLoading(false);
@@ -128,6 +140,7 @@ export default function AuthPage() {
             value={formData.password}
             onChange={handleChange}
             required
+            minLength={mode === "register" ? 6 : undefined}
             className="w-full px-4 py-2 bg-gray-800 border border-emerald-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           <button
@@ -141,14 +154,15 @@ export default function AuthPage() {
 
         {mode === "register" && (
           <div className="space-y-1 relative">
-            <label className="text-sm font-medium">{language === "ro" ? "Confirma parola" : "Confirm password"}</label>
+            <label className="text-sm font-medium">{language === "ro" ? "Confirmă parola" : "Confirm password"}</label>
             <input
               type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
-              placeholder={language === "ro" ? "Confirma parola" : "Confirm password"}
+              placeholder={language === "ro" ? "Confirmă parola" : "Confirm password"}
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              minLength={6}
               className="w-full px-4 py-2 bg-gray-800 border border-emerald-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             <button

@@ -110,7 +110,7 @@ Then log in with `demo@example.com` / `demo123`. See [DEMO_DATA_README.md](DEMO_
 | GET | `/api/reports` | Balance, income, expenses, per-category summary |
 | GET | `/api/export/expenses` | CSV export (with optional `start`/`end` date filters) |
 | GET | `/api/pdf/report` | PDF report |
-| GET/POST | `/settings/savings-goal` | Read / set the savings goal |
+| GET/POST | `/api/settings/savings-goal` | Read / set the savings goal |
 
 All routes except auth require an `Authorization: Bearer <token>` header. Send `Accept-Language: ro` for Romanian error messages.
 
