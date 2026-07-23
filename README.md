@@ -1,11 +1,14 @@
 # Budget Manager
 
-A full-stack personal budget management web application, built as my Bachelor's thesis project at Ovidius University of Constanța (Computer Science, 2025).
+Full-stack personal budget app — Bachelor's thesis project at Ovidius University of Constanța (Computer Science, 2025).
 
 **Live demo:** [https://budget-manager-livid-three.vercel.app](https://budget-manager-livid-three.vercel.app)  
-**API:** [https://budget-manager-u6l5.onrender.com](https://budget-manager-u6l5.onrender.com)
+**API:** [https://budget-manager-u6l5.onrender.com](https://budget-manager-u6l5.onrender.com)  
+**Demo login:** `demo@example.com` / `demo123`
 
-Track income and expenses, organize them by category, visualize your finances with interactive charts, browse transactions on a calendar, set monthly savings goals, and export reports to CSV or PDF — all in a modern, responsive UI with dark/light themes and full English/Romanian language support.
+> Free Render tier: first API request after idle can take ~30–60 seconds.
+
+Track income and expenses by category, review totals on a dashboard, filter interactive charts, browse a transaction calendar, set a monthly savings goal, and export CSV/PDF — with English/Romanian UI and dark/light themes.
 
 ## Screenshots
 
@@ -19,16 +22,16 @@ Track income and expenses, organize them by category, visualize your finances wi
 
 ## Features
 
-- **Authentication** — register/login with JWT, bcrypt-hashed passwords, protected routes
-- **Transactions** — add, edit, delete income and expenses with categories, descriptions and dates; search, filter by type, sort, and view by time range (day / week / month / year / 5 years)
-- **Categories** — full CRUD, per-user, duplicate detection
-- **Dashboard** — animated overview cards for balance, income and expenses
-- **Reports & charts** — interactive pie and bar charts (Recharts) with date-range filtering
-- **Transaction calendar** — browse transactions day by day on a monthly calendar
-- **Savings goals** — set and track a monthly savings goal
-- **Export** — download reports as CSV (Excel-friendly, with summary rows) or PDF
-- **Internationalization** — full EN/RO interface, including localized API error messages
-- **Theming** — dark and light mode, responsive layout (TailwindCSS)
+- **Authentication** — register/login with JWT and bcrypt, protected routes, session cleanup on 401
+- **Transactions** — create, edit, delete income/expenses; categories, search, type filter, sort, time ranges
+- **Categories** — per-user CRUD with color and duplicate checks
+- **Dashboard** — balance, income, expenses, savings progress, category count
+- **Reports & charts** — pie/bar charts (Recharts) with date and category filters
+- **Calendar** — day-by-day transaction view
+- **Savings goal** — set in Settings, shown on Dashboard
+- **Export** — CSV (with summary) and PDF reports using the same filters/totals
+- **i18n** — EN/RO UI and API messages via `Accept-Language`
+- **Theming** — dark/light mode, responsive layout (mobile drawer + desktop sidebar)
 
 ## Tech Stack
 
@@ -36,14 +39,14 @@ Track income and expenses, organize them by category, visualize your finances wi
 |----------|--------------|
 | Frontend | React 18, React Router 6, TailwindCSS, Recharts, Framer Motion, Axios |
 | Backend  | Node.js, Express, JWT, bcryptjs, PDFKit, json2csv |
-| Database | MongoDB (Mongoose) — works with local MongoDB, MongoDB Atlas, or a zero-setup in-memory instance |
+| Database | MongoDB (Mongoose) — Atlas, local MongoDB, or in-memory fallback for local demos |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- MongoDB (optional — the app falls back to an in-memory database if no `MONGO_URI` is set)
+- MongoDB optional locally (in-memory DB starts if `MONGO_URI` is empty; **required in production**)
 
 ### 1. Backend
 
@@ -54,9 +57,7 @@ copy .env.example .env   # then edit .env if you want a persistent database
 npm start
 ```
 
-The API runs on `http://localhost:5000`.
-
-If `MONGO_URI` is left empty, an in-memory MongoDB instance is started automatically — perfect for trying the app out (data is lost when the server stops).
+API: `http://localhost:5000`.
 
 ### 2. Frontend
 
@@ -66,36 +67,36 @@ npm install
 npm start
 ```
 
-The app runs on `http://localhost:3000`.
+App: `http://localhost:3000`.
 
 ### 3. Demo data (optional)
 
-With both servers running, populate the app with ~3 months of realistic demo transactions:
+With both servers running:
 
 ```bash
-npm install   # in the project root
+npm install   # project root
 node populate-demo-data.js
 ```
 
-Then log in with `demo@example.com` / `demo123`. See [DEMO_DATA_README.md](DEMO_DATA_README.md) for details.
+Login: `demo@example.com` / `demo123`. See [DEMO_DATA_README.md](DEMO_DATA_README.md).
 
 ## Project Structure
 
 ```
 ├── backend/
-│   ├── config/        # DB connection, env config, app constants
-│   ├── controllers/   # Business logic (auth, expenses, categories, reports, export, PDF, settings)
-│   ├── middleware/    # JWT auth middleware
-│   ├── models/        # Mongoose schemas (User, Expense, Category)
-│   ├── routes/        # Express routers (/api/...)
-│   ├── utils/         # CSV export, PDF generation, i18n messages
-│   └── server.js      # App entry point
+│   ├── config/        # DB connection, env config, constants
+│   ├── controllers/   # Auth, expenses, categories, reports, export, PDF, settings
+│   ├── middleware/    # JWT auth
+│   ├── models/        # User, Expense, Category
+│   ├── routes/        # /api/...
+│   ├── utils/         # CSV/PDF helpers, i18n messages, expense query/totals
+│   └── server.js
 ├── frontend/
 │   └── src/
-│       ├── components/  # Layout, Sidebar, cards, loaders
-│       ├── context/     # Theme, Language, Currency providers
-│       ├── pages/       # Dashboard, Expenses, Categories, Report, Calendar, Settings, Login
-│       └── utils/       # Axios instance with JWT interceptor
+│       ├── components/
+│       ├── context/     # Theme, Language, Currency
+│       ├── pages/
+│       └── utils/       # Axios + date helpers
 └── populate-demo-data.js
 ```
 
@@ -107,12 +108,12 @@ Then log in with `demo@example.com` / `demo123`. See [DEMO_DATA_README.md](DEMO_
 | POST | `/api/auth/login` | Login, returns JWT |
 | GET/POST/PUT/DELETE | `/api/expenses` | Transaction CRUD |
 | GET/POST/PUT/DELETE | `/api/categories` | Category CRUD |
-| GET | `/api/reports` | Balance, income, expenses, per-category summary |
-| GET | `/api/export/expenses` | CSV export (with optional `start`/`end` date filters) |
-| GET | `/api/pdf/report` | PDF report |
-| GET/POST | `/api/settings/savings-goal` | Read / set the savings goal |
+| GET | `/api/reports` | Balance, income, expenses, per-category summary (`start`/`end`/`category`) |
+| GET | `/api/export/expenses` | CSV export (same filters) |
+| GET | `/api/pdf/report` | PDF report (same filters) |
+| GET/POST | `/api/settings/savings-goal` | Read / set savings goal |
 
-All routes except auth require an `Authorization: Bearer <token>` header. Send `Accept-Language: ro` for Romanian error messages.
+Authenticated routes need `Authorization: Bearer <token>`. Use `Accept-Language: ro` for Romanian API messages.
 
 ## Author
 
@@ -122,12 +123,10 @@ All routes except auth require an `Authorization: Bearer <token>` header. Send `
 
 | Part | Free host |
 |------|-----------|
-| Database | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (M0 free cluster) |
-| Backend | [Render](https://render.com) (Web Service, free) |
-| Frontend | [Vercel](https://vercel.com) (Project from `frontend/`) |
+| Database | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (M0) |
+| Backend | [Render](https://render.com) (Web Service) |
+| Frontend | [Vercel](https://vercel.com) (`frontend/` root) |
 
-1. Create an Atlas cluster, get `MONGO_URI`, allow network access `0.0.0.0/0`.
-2. On Render, deploy the `backend` folder with env vars: `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL` (your Vercel URL).
-3. On Vercel, set Root Directory to `frontend` and env var `REACT_APP_API_URL` to `https://<your-render-service>.onrender.com/api`.
-
-Note: the free Render tier spins down after inactivity — the first request after idle can take ~30–60 seconds.
+1. Atlas cluster + `MONGO_URI`, network access `0.0.0.0/0`.
+2. Render: deploy `backend` with `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL` (Vercel URL or `*`).
+3. Vercel: root `frontend`, `REACT_APP_API_URL=https://<render-service>.onrender.com/api`.
