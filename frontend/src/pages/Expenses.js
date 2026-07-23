@@ -3,6 +3,7 @@ import axios from "../utils/axiosConfig";
 import { useCurrency } from "../context/CurrencyContext";
 import { useLanguage } from "../context/LanguageContext";
 import Loader from "../components/Loader";
+import { toLocalDateKey, todayLocalKey } from "../utils/date";
 
 const t = {
   en: {
@@ -23,6 +24,10 @@ const t = {
     updated: "Transaction updated",
     error: "Amount, date and type are required",
     saveError: "Could not save transaction",
+    fetchError: "Could not load transactions.",
+    deleteError: "Could not delete transaction.",
+    exportError: "Could not export CSV.",
+    confirmDelete: "Delete this transaction?",
     noDescription: "No description",
     noTransactions: "No transactions found.",
     delete: "Delete",
@@ -57,6 +62,10 @@ const t = {
     updated: "Tranzacția a fost actualizată",
     error: "Sumă, dată și tip sunt obligatorii",
     saveError: "Eroare la salvarea tranzacției",
+    fetchError: "Nu s-au putut încărca tranzacțiile.",
+    deleteError: "Nu s-a putut șterge tranzacția.",
+    exportError: "Exportul CSV a eșuat.",
+    confirmDelete: "Ștergi această tranzacție?",
     noDescription: "Fără descriere",
     noTransactions: "Nicio tranzacție găsită.",
     delete: "Șterge",
@@ -94,7 +103,6 @@ export default function Expenses() {
   const [filterType, setFilterType] = useState("");
   const [sortAsc, setSortAsc] = useState(true);
   const [timeRange, setTimeRange] = useState("all");
-  const token = localStorage.getItem("token");
   const { formatCurrency } = useCurrency();
   const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
@@ -109,12 +117,8 @@ export default function Expenses() {
   ];
 
   useEffect(() => {
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
     fetchData();
-  }, [token]);
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -127,6 +131,7 @@ export default function Expenses() {
       setCategories(catRes.data);
     } catch (err) {
       console.error("Fetch failed:", err);
+      setError(t[language].fetchError);
     } finally {
       setLoading(false);
     }
@@ -140,7 +145,7 @@ export default function Expenses() {
     setFormData({
       amount: String(tx.amount ?? ""),
       description: tx.description || "",
-      date: tx.date ? new Date(tx.date).toISOString().split("T")[0] : "",
+      date: tx.date ? toLocalDateKey(tx.date) : "",
       category: tx.category?._id || tx.category || "",
       type: tx.type || "expense",
     });
@@ -180,18 +185,20 @@ export default function Expenses() {
       }
       setFormData(emptyForm);
       fetchData();
-    } catch {
-      setError(t[language].saveError);
+    } catch (err) {
+      setError(err.response?.data?.msg || t[language].saveError);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm(t[language].confirmDelete)) return;
     try {
       await axios.delete(`/expenses/${id}`);
       if (editingId === id) cancelEdit();
       fetchData();
     } catch (err) {
       console.error("Delete failed:", err);
+      setError(t[language].deleteError);
     }
   };
 
@@ -200,15 +207,15 @@ export default function Expenses() {
       const res = await axios.get("/export/expenses", { responseType: "blob" });
       const url = window.URL.createObjectURL(new Blob([res.data], { type: "text/csv" }));
       const link = document.createElement("a");
-      const today = new Date().toISOString().split("T")[0];
       link.href = url;
-      link.setAttribute("download", `expenses_${today}.csv`);
+      link.setAttribute("download", `expenses_${todayLocalKey()}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("CSV export failed:", err);
+      setError(t[language].exportError);
     }
   };
 
@@ -301,51 +308,71 @@ export default function Expenses() {
               </div>
             )}
 
-            <input
-              type="number"
-              name="amount"
-              placeholder={t[language].amount}
-              value={formData.amount}
-              onChange={handleChange}
-              className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
-            />
-            <input
-              type="text"
-              name="description"
-              placeholder={t[language].description}
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
-            />
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
-            />
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
-            >
-              <option value="">{t[language].category}</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
-            >
-              <option value="expense">{t[language].expense}</option>
-              <option value="income">{t[language].income}</option>
-            </select>
+            <div>
+              <label htmlFor="tx-amount" className="block text-sm font-medium mb-1">{t[language].amount}</label>
+              <input
+                id="tx-amount"
+                type="number"
+                name="amount"
+                placeholder={t[language].amount}
+                value={formData.amount}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
+              />
+            </div>
+            <div>
+              <label htmlFor="tx-description" className="block text-sm font-medium mb-1">{t[language].description}</label>
+              <input
+                id="tx-description"
+                type="text"
+                name="description"
+                placeholder={t[language].description}
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
+              />
+            </div>
+            <div>
+              <label htmlFor="tx-date" className="block text-sm font-medium mb-1">{t[language].date}</label>
+              <input
+                id="tx-date"
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
+              />
+            </div>
+            <div>
+              <label htmlFor="tx-category" className="block text-sm font-medium mb-1">{t[language].category}</label>
+              <select
+                id="tx-category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
+              >
+                <option value="">{t[language].category}</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="tx-type" className="block text-sm font-medium mb-1">{t[language].type}</label>
+              <select
+                id="tx-type"
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none"
+              >
+                <option value="expense">{t[language].expense}</option>
+                <option value="income">{t[language].income}</option>
+              </select>
+            </div>
 
             <div className="flex flex-wrap gap-3">
               <button

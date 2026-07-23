@@ -5,7 +5,7 @@ exports.getSavingsGoal = async (req, res) => {
   const lang = req.headers["accept-language"] || "en";
   try {
     const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ msg: getMessage(lang, "serverError") });
+    if (!user) return res.status(404).json({ msg: getMessage(lang, "notFound") });
     res.json({ goal: user.savingsGoal || 0 });
   } catch (err) {
     res.status(500).json({ msg: getMessage(lang, "serverError") });
@@ -24,7 +24,7 @@ exports.setSavingsGoal = async (req, res) => {
       { savingsGoal: goal },
       { new: true }
     );
-    if (!user) return res.status(404).json({ msg: getMessage(lang, "serverError") });
+    if (!user) return res.status(404).json({ msg: getMessage(lang, "notFound") });
     res.json({ goal: user.savingsGoal, msg: getMessage(lang, "savingsGoalSaved") });
   } catch (err) {
     res.status(500).json({ msg: getMessage(lang, "serverError") });

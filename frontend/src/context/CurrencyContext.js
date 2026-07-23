@@ -1,21 +1,29 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 
 const CurrencyContext = createContext();
 
+const formatter = new Intl.NumberFormat("ro-RO", {
+  style: "currency",
+  currency: "RON",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 export const CurrencyProvider = ({ children }) => {
   const selectedCurrency = "RON";
-  
-  // Amounts are stored and displayed in RON, so no conversion is needed
+
+  const formatCurrency = useMemo(
+    () => (amount) => {
+      const n = Number(amount);
+      return formatter.format(Number.isFinite(n) ? n : 0);
+    },
+    []
+  );
+
   const convert = (amount) => amount;
 
-  const formatCurrency = (amount) => {
-    return `${amount.toFixed(2)} lei`;
-  };
-
   return (
-    <CurrencyContext.Provider
-      value={{ selectedCurrency, formatCurrency, convert }}
-    >
+    <CurrencyContext.Provider value={{ selectedCurrency, formatCurrency, convert }}>
       {children}
     </CurrencyContext.Provider>
   );

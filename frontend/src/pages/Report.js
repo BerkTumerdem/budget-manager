@@ -17,6 +17,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import Loader from "../components/Loader";
+import { todayLocalKey } from "../utils/date";
 
 const getChartColors = (isDarkMode) => ({
   primary: isDarkMode ? "#10b981" : "#059669", // emerald-500/600
@@ -46,6 +47,8 @@ const t = {
     viewExpenses: "Expenses only",
     viewIncome: "Income only",
     viewLabel: "Show",
+    fetchError: "Could not load report data.",
+    downloadError: "Download failed.",
   },
   ro: {
     title: "Raport Cheltuieli",
@@ -65,6 +68,8 @@ const t = {
     viewExpenses: "Doar cheltuieli",
     viewIncome: "Doar venituri",
     viewLabel: "Afișează",
+    fetchError: "Nu s-au putut încărca datele raportului.",
+    downloadError: "Descărcarea a eșuat.",
   },
 };
 
@@ -79,17 +84,11 @@ export default function Report() {
   const [end, setEnd] = useState("");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
-  const [viewMode, setViewMode] = useState("all"); // 'all', 'expenses', 'income'
-  const token = localStorage.getItem("token");
+  const [viewMode, setViewMode] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
     fetchData();
     fetchCategories();
   }, []);
@@ -105,7 +104,7 @@ export default function Report() {
       const res = await axios.get("/reports", { params });
       setSummary(res.data);
     } catch (err) {
-      setError("Failed to fetch report data");
+      setError(t[language].fetchError);
     } finally {
       setLoading(false);
     }
@@ -137,14 +136,15 @@ export default function Report() {
       });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
-      const today = new Date().toISOString().split("T")[0];
       link.href = url;
-      link.setAttribute("download", `report_${today}.${type}`);
+      link.setAttribute("download", `report_${todayLocalKey()}.${type}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(`Failed to download ${type.toUpperCase()}:`, err);
+      setError(t[language].downloadError);
     }
   };
 
@@ -281,7 +281,7 @@ export default function Report() {
                         />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(val) => `${val.toFixed(2)} lei`} />
+                    <Tooltip formatter={(val) => formatCurrency(val)} />
                     <Legend
                       verticalAlign="bottom"
                       height={36}
@@ -302,7 +302,7 @@ export default function Report() {
                     <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#444" : "#ddd"} />
                     <XAxis dataKey="name" stroke={themeColor} interval={0} angle={-25} textAnchor="end" height={70} tick={{ fontSize: 11 }} />
                     <YAxis stroke={themeColor} width={40} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(val) => `${val.toFixed(2)} lei`} />
+                    <Tooltip formatter={(val) => formatCurrency(val)} />
                     <Bar dataKey="value" isAnimationActive>
                       {filteredPieData.map((entry, index) => (
                         <Cell
@@ -340,7 +340,6 @@ export default function Report() {
             <p className="text-gray-500 dark:text-gray-400 italic mt-6">{t[language].noData}</p>
           )}
           {error && <div className="mt-2 text-red-500 text-sm font-semibold bg-red-50 dark:bg-red-900/30 rounded p-2">{error}</div>}
-          {success && <div className="mt-2 text-green-600 text-sm font-semibold bg-green-50 dark:bg-green-900/30 rounded p-2">{success}</div>}
         </>
       )}
     </div>

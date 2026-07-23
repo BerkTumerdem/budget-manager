@@ -1,5 +1,6 @@
 const Category = require("../models/Category");
 const getMessage = require("../utils/messages");
+const { isValidObjectId, isValidHexColor } = require("../utils/expenseQuery");
 
 exports.addCategory = async (req, res) => {
   const lang = req.headers["accept-language"] || "en";
@@ -21,12 +22,14 @@ exports.addCategory = async (req, res) => {
     }
 
     const count = await Category.countDocuments({ userId: req.user.id });
-    const newCategory = new Category({
+    const safeColor = isValidHexColor(color) ? color : Category.nextColor(count);
+
+    const category = await new Category({
       name: trimmed,
-      color: color || Category.nextColor(count),
+      color: safeColor,
       userId: req.user.id,
-    });
-    const category = await newCategory.save();
+    }).save();
+
     res.json({ category, msg: getMessage(lang, "categoryAdded") });
   } catch (err) {
     console.error(err.message);
@@ -50,9 +53,18 @@ exports.updateCategory = async (req, res) => {
   const lang = req.headers["accept-language"] || "en";
 
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(404).json({ msg: getMessage(lang, "notFound") });
+    }
+
     const updates = {};
     if (req.body.name !== undefined) updates.name = String(req.body.name).trim();
-    if (req.body.color !== undefined) updates.color = req.body.color;
+    if (req.body.color !== undefined) {
+      if (!isValidHexColor(req.body.color)) {
+        return res.status(400).json({ msg: getMessage(lang, "requiredFields") });
+      }
+      updates.color = req.body.color;
+    }
 
     if (updates.name) {
       const duplicate = await Category.findOne({
@@ -72,7 +84,7 @@ exports.updateCategory = async (req, res) => {
     );
 
     if (!category) {
-      return res.status(404).json({ msg: getMessage(lang, "serverError") });
+      return res.status(404).json({ msg: getMessage(lang, "notFound") });
     }
 
     res.json({ category, msg: getMessage(lang, "categoryUpdated") });
@@ -86,7 +98,19 @@ exports.deleteCategory = async (req, res) => {
   const lang = req.headers["accept-language"] || "en";
 
   try {
-    await Category.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(404).json({ msg: getMessage(lang, "notFound") });
+    }
+
+    const deleted = await Category.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ msg: getMessage(lang, "notFound") });
+    }
+
     res.json({ msg: getMessage(lang, "categoryDeleted") });
   } catch (err) {
     console.error(err.message);

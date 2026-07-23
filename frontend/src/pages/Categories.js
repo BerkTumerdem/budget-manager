@@ -22,6 +22,8 @@ const t = {
     sortAsc: "A → Z",
     sortDesc: "Z → A",
     noCategories: "No categories found.",
+    confirmDelete: "Delete this category?",
+    deleteError: "Could not delete category.",
   },
   ro: {
     title: "Categorii",
@@ -41,6 +43,8 @@ const t = {
     sortAsc: "A → Z",
     sortDesc: "Z → A",
     noCategories: "Nicio categorie găsită.",
+    confirmDelete: "Ștergi această categorie?",
+    deleteError: "Nu s-a putut șterge categoria.",
   },
 };
 
@@ -59,10 +63,6 @@ export default function Categories() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      window.location.href = "/login";
-      return;
-    }
     fetchCategories();
   }, []);
 
@@ -122,12 +122,13 @@ export default function Categories() {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm(t[language].confirmDelete)) return;
     try {
       await axios.delete(`/categories/${id}`);
       if (editingId === id) resetForm();
       fetchCategories();
     } catch {
-      setError(t[language].fail);
+      setError(t[language].deleteError);
     }
   };
 

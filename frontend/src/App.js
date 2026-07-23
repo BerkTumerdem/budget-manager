@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -9,7 +9,7 @@ import Settings from "./pages/Settings";
 import TransactionsCalendar from "./pages/TransactionsCalendar";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
-import { CurrencyProvider } from "./context/CurrencyContext"; 
+import { CurrencyProvider } from "./context/CurrencyContext";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
 function App() {
@@ -19,11 +19,9 @@ function App() {
         <CurrencyProvider>
           <Router>
             <Routes>
-              {/* Public routes */}
               <Route path="/login" element={<AuthPage />} />
               <Route path="/register" element={<AuthPage />} />
 
-              {/* Protected routes with layout (Sidebar) */}
               <Route element={<ProtectedRoutes />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/expenses" element={<Expenses />} />

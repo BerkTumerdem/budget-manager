@@ -19,7 +19,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
+      return callback(null, false);
     },
   })
 );
@@ -38,7 +38,6 @@ app.use("/api/reports", require("./routes/reports"));
 app.use("/api/export", require("./routes/export"));
 app.use("/api/pdf", require("./routes/pdf"));
 app.use("/api/settings", settingsRoutes);
-app.use("/settings", settingsRoutes);
 
 app.get("/", (req, res) => {
   res.send("Budget Manager API running...");

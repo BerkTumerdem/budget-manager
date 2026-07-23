@@ -5,6 +5,8 @@ const config = require("../config/config");
 const constants = require("../config/constants");
 const getMessage = require("../utils/messages");
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 exports.registerUser = async (req, res) => {
   let { email, password } = req.body;
   email = (email || "").trim().toLowerCase();
@@ -13,6 +15,10 @@ exports.registerUser = async (req, res) => {
   try {
     if (!email || !password) {
       return res.status(400).json({ msg: getMessage(lang, "requiredFields") });
+    }
+
+    if (!EMAIL_RE.test(email)) {
+      return res.status(400).json({ msg: getMessage(lang, "invalidEmail") });
     }
 
     if (password.length < constants.VALIDATION.PASSWORD_MIN_LENGTH) {
@@ -28,7 +34,9 @@ exports.registerUser = async (req, res) => {
     await user.save();
 
     const payload = { user: { id: user.id, email: user.email } };
-    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: constants.JWT.EXPIRATION });
+    const token = jwt.sign(payload, config.jwtSecret, {
+      expiresIn: constants.JWT.EXPIRATION,
+    });
 
     res.json({ token, msg: getMessage(lang, "userCreated") });
   } catch (err) {
@@ -49,16 +57,18 @@ exports.loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: getMessage(lang, "invalidCredentials") });
+      return res.status(401).json({ msg: getMessage(lang, "invalidCredentials") });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ msg: getMessage(lang, "invalidCredentials") });
+      return res.status(401).json({ msg: getMessage(lang, "invalidCredentials") });
     }
 
     const payload = { user: { id: user.id, email: user.email } };
-    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: constants.JWT.EXPIRATION });
+    const token = jwt.sign(payload, config.jwtSecret, {
+      expiresIn: constants.JWT.EXPIRATION,
+    });
 
     res.json({ token });
   } catch (err) {

@@ -26,6 +26,13 @@ const translations = {
     calendar: "Calendar",
     logout: "Logout",
     menu: "Menu",
+    brand: "Money Control Hub",
+    since: "Since 2025",
+    guest: "Guest",
+    footer: "MCH Budget",
+    toggleTheme: "Toggle theme",
+    close: "Close",
+    closeMenu: "Close menu",
   },
   ro: {
     dashboard: "Tablou",
@@ -36,6 +43,13 @@ const translations = {
     calendar: "Calendar",
     logout: "Delogare",
     menu: "Meniu",
+    brand: "Money Control Hub",
+    since: "Din 2025",
+    guest: "Oaspete",
+    footer: "MCH Budget",
+    toggleTheme: "Comută tema",
+    close: "Închide",
+    closeMenu: "Închide meniul",
   },
 };
 
@@ -107,7 +121,8 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    localStorage.removeItem("avatar");
+    window.location.assign("/login");
   };
 
   const navContent = (showLabels) => (
@@ -121,10 +136,10 @@ const Sidebar = () => {
         {showLabels && (
           <>
             <h1 className="text-base font-bold bg-gradient-to-r from-emerald-500 to-emerald-700 dark:from-emerald-400 dark:to-emerald-600 bg-clip-text text-transparent tracking-wide px-2">
-              Money Control Hub
+              {t.brand}
             </h1>
             <span className="text-xs text-emerald-600/80 dark:text-emerald-400/80 uppercase mt-1">
-              Since 2025
+              {t.since}
             </span>
           </>
         )}
@@ -161,7 +176,7 @@ const Sidebar = () => {
           />
           {showLabels && (
             <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate min-w-0">
-              {userEmail || "Guest"}
+              {userEmail || t.guest}
             </p>
           )}
         </div>
@@ -174,7 +189,7 @@ const Sidebar = () => {
         </button>
         {showLabels && (
           <p className="mt-3 text-center text-xs text-emerald-600/60 dark:text-emerald-500/60">
-            © MCH • Budget Pro
+            {t.footer}
           </p>
         )}
       </div>
@@ -201,7 +216,7 @@ const Sidebar = () => {
         </div>
         <button
           type="button"
-          aria-label="Toggle theme"
+          aria-label={t.toggleTheme}
           onClick={toggleTheme}
           className="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
@@ -213,7 +228,7 @@ const Sidebar = () => {
       {mobileOpen && (
         <button
           type="button"
-          aria-label="Close menu"
+          aria-label={t.closeMenu}
           className="md:hidden fixed inset-0 z-40 bg-black/50"
           onClick={() => setMobileOpen(false)}
         />
@@ -229,7 +244,7 @@ const Sidebar = () => {
           <span className="font-semibold text-emerald-600 dark:text-emerald-400">{t.menu}</span>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t.close}
             onClick={() => setMobileOpen(false)}
             className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
@@ -259,6 +274,7 @@ const Sidebar = () => {
           </button>
           <button
             type="button"
+            aria-label={t.toggleTheme}
             onClick={toggleTheme}
             className="text-gray-600 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 p-2"
           >

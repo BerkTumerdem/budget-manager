@@ -10,7 +10,7 @@ import {
   FaChartPie,
   FaPiggyBank,
 } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Loader from "../components/Loader";
 
 const t = {
@@ -21,7 +21,7 @@ const t = {
     expenses: "Expenses",
     savings: "Savings Target",
     categories: "Top Categories",
-    recent: "Recent Transactions",
+    fetchError: "Could not load dashboard data.",
   },
   ro: {
     title: "Panou General",
@@ -30,83 +30,7 @@ const t = {
     expenses: "Cheltuieli",
     savings: "Ținta de Economii",
     categories: "Categorii Principale",
-    recent: "Tranzacții Recente",
-  },
-};
-
-const cardVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 50,
-    scale: 0.8,
-    rotateX: -45,
-  },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    rotateX: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-      type: "spring",
-      stiffness: 100,
-    },
-  }),
-  hover: {
-    scale: 1.05,
-    rotateY: 5,
-    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-    transition: {
-      duration: 0.3,
-      type: "spring",
-      stiffness: 400,
-    },
-  },
-};
-
-const titleVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: -50,
-    scale: 0.5,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.8,
-      type: "spring",
-      stiffness: 100,
-    },
-  },
-};
-
-const logoVariants = {
-  hidden: { 
-    opacity: 0, 
-    scale: 0,
-    rotate: -180,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    rotate: 0,
-    transition: {
-      duration: 1,
-      type: "spring",
-      stiffness: 100,
-    },
-  },
-  hover: {
-    scale: 1.1,
-    rotate: 5,
-    transition: {
-      duration: 0.3,
-      type: "spring",
-      stiffness: 400,
-    },
+    fetchError: "Nu s-au putut încărca datele panoului.",
   },
 };
 
@@ -117,14 +41,13 @@ export default function Dashboard() {
   const { formatCurrency } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return (window.location.href = "/login");
-
         const [reportRes, goalRes] = await Promise.all([
           axios.get("/reports"),
           axios.get("/settings/savings-goal").catch(() => ({ data: { goal: 0 } })),
@@ -133,14 +56,14 @@ export default function Dashboard() {
         setSavingsGoal(Number(goalRes.data?.goal) || 0);
       } catch (err) {
         console.error("Failed to fetch data:", err);
-        setError("Failed to fetch data. Please try again later.");
+        setError(t[language].fetchError);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [language]);
 
   const total = summary?.totalBalance ?? 0;
   const income = summary?.income ?? 0;
@@ -186,117 +109,70 @@ export default function Dashboard() {
     },
   ];
 
+  const fade = reduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 12 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.35 },
+      };
+
   return (
-    <div className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-gray-100 via-gray-100 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
+    <div className="p-4 sm:p-6 min-h-screen bg-transparent text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden relative">
       {loading ? (
-        <div className="flex items-center justify-center min-h-[300px]"><Loader size={48} /></div>
+        <div className="flex items-center justify-center min-h-[300px]">
+          <Loader size={48} />
+        </div>
       ) : (
         <>
-          {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-emerald-500/10 animate-gradient-x"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent animate-pulse-slow"></div>
-            {[...Array(20)].map((_, i) => (
+          <motion.div
+            className="flex justify-center mb-8 relative z-10"
+            {...fade}
+          >
+            <img
+              src="/mchLOGO.png"
+              alt="MCH Logo"
+              className="w-24 h-24 object-contain rounded-full"
+            />
+          </motion.div>
+
+          <motion.h1
+            className="text-3xl sm:text-4xl font-bold text-center mb-10 relative z-10 text-emerald-700 dark:text-emerald-400"
+            {...fade}
+          >
+            {t[language].title}
+          </motion.h1>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto relative z-10">
+            {cards.map((card, index) => (
               <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-emerald-500/20 rounded-full"
-                initial={{
-                  x: Math.random() * window.innerWidth,
-                  y: Math.random() * window.innerHeight,
-                }}
-                animate={{
-                  y: [null, Math.random() * window.innerHeight],
-                  opacity: [0.2, 0.5, 0.2],
-                }}
-                transition={{
-                  duration: Math.random() * 10 + 10,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
+                key={card.title}
+                initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { delay: index * 0.06, duration: 0.3 }
+                }
+              >
+                <DashboardCard
+                  title={card.title}
+                  value={card.value}
+                  icon={card.icon}
+                  type={card.type}
+                  highlight={card.type === "highlight"}
+                />
+              </motion.div>
             ))}
           </div>
 
-          <motion.div
-            className="flex justify-center mb-12 relative z-10"
-            variants={logoVariants}
-            initial="hidden"
-            animate="visible"
-            whileHover="hover"
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-full blur-2xl opacity-20 animate-pulse-slow"></div>
-              <motion.img
-                src="/mchLOGO.png"
-                alt="MCH Logo"
-                className="relative w-28 h-28 object-contain drop-shadow-2xl rounded-full"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              />
+          {error && (
+            <div className="mt-6 max-w-7xl mx-auto text-red-600 dark:text-red-400 text-sm font-semibold bg-red-50 dark:bg-red-900/30 rounded-xl p-3">
+              {error}
             </div>
-          </motion.div>
-
-          <motion.h1 
-            className="text-4xl font-bold text-center mb-12 text-gradient relative z-10"
-            variants={titleVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-emerald-700">
-              {t[language].title}
-            </span>
-          </motion.h1>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 max-w-7xl mx-auto relative z-10 px-0">
-            <AnimatePresence>
-              {cards.map((card, index) => (
-                <motion.div
-                  key={index}
-                  custom={index}
-                  variants={cardVariants}
-                  initial="hidden"
-                  animate="visible"
-                  whileHover="hover"
-                  className="transform-gpu"
-                >
-                  <DashboardCard
-                    title={card.title}
-                    value={card.value}
-                    icon={card.icon}
-                    type={card.type}
-                    highlight={card.type === "highlight"}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-
-          {error && <div className="mt-2 text-red-500 text-sm font-semibold bg-red-50 dark:bg-red-900/30 rounded p-2">{error}</div>}
+          )}
         </>
       )}
-
-      <style jsx global>{`
-        @keyframes gradient-x {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        .animate-gradient-x {
-          animation: gradient-x 15s ease infinite;
-          background-size: 200% 200%;
-        }
-        .text-gradient {
-          background: linear-gradient(to right, #10b981, #059669);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          animation: gradient-x 15s ease infinite;
-          background-size: 200% 200%;
-        }
-      `}</style>
     </div>
   );
 }
